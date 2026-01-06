@@ -1,8 +1,11 @@
 #include<stdio.h>
 #include<string.h>
+#include<time.h>
 #include<math.h>
 int main(){
-    const char *mgs="Kl iurp folhqw";
+    clock_t start, end;
+    double time_taken;
+    const char *mgs="Fkdudfwhu jurzwk lv d glu hf wuhvxow ri Jr'g wudqvirupdwlyh zrun, jxlglqj rxu prudo ghflvlrqv";
     int len=strlen(mgs);
     for(int i=1;i<=26;i++){
         printf("%d.",i);
@@ -22,5 +25,9 @@ int main(){
         }
         printf("\n");
     }
+    end = clock();
+    time_taken = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;
+    printf("Time taken: %.3f ms\n", time_taken);
+    printf("Number of Characters: %d\n", len);
     return 0;
 }
