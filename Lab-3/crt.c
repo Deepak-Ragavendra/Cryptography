@@ -9,7 +9,7 @@ int module(int a,int b){
 
 int find(int N,int n){
     int i=1;
-    while(i>=0){
+    while(1){
         if((N*i)%n==1){
             break;
         }
@@ -21,7 +21,7 @@ int find(int N,int n){
 }
 
 int calculate_crt(int a[],int m[],int M,int n){
-    int N[n],x=0,k;
+    int N[n],x=0;
     for(int i=0;i<n;i++){
         N[i]=M/m[i];
     }
