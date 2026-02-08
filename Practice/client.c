@@ -34,3 +34,30 @@ int main() {
 
     return 0;
 }
+
+
+#include<stdio.h>
+#include<winsock2.h>
+#pragma comment(lib,"ws2_32.lib")
+
+int main(){
+    WSADATA wsa;
+    SOCKET client_socket;
+    struct sockaddr_in server_addr;
+    char message[]="Hello";
+
+    WSAStartup(MAKEWORD(2,2),&wsa);
+    client_socket=socket(AF_INET,SOCK_STREAM,0);
+
+    server_addr.sin_family=AF_INET;
+    server_addr.sin_port=htons(8080);
+    server_addr.sin_addr.s_addr=inet("192.168.1.1");
+
+    socket(client_socket,(struct sockaddr*)&server_addr,sizeof(server_addr));
+
+    send(client_socket,message,strlen(message),0);
+
+    closesocket(client_socket);
+
+    WSACleanup();
+}
