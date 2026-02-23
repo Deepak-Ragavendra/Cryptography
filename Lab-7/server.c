@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <winsock2.h>
+#include <math.h>
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -12,6 +13,46 @@ long long modexp(long long b, long long e, long long m) {
         e >>= 1;
     }
     return r;
+}
+
+/* Check if p is prime */
+int isPrime(long long n) {
+    if (n <= 1) return 0;
+    if (n <= 3) return 1;
+    if (n % 2 == 0 || n % 3 == 0) return 0;
+    for (long long i = 5; i * i <= n; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0)
+            return 0;
+    }
+    return 1;
+}
+
+/* Find prime factors of n */
+int getPrimeFactors(long long n, long long factors[]) {
+    int count = 0;
+    for (long long i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            factors[count++] = i;
+            while (n % i == 0)
+                n /= i;
+        }
+    }
+    if (n > 1)
+        factors[count++] = n;
+    return count;
+}
+
+/* Check if g is a primitive root of p */
+int isPrimitiveRoot(long long g, long long p) {
+    long long phi = p - 1;
+    long long factors[64];
+    int fcount = getPrimeFactors(phi, factors);
+
+    for (int i = 0; i < fcount; i++) {
+        if (modexp(g, phi / factors[i], p) == 1)
+            return 0;
+    }
+    return 1;
 }
 
 int main() {
@@ -40,17 +81,29 @@ int main() {
     cfd = accept(sfd, (struct sockaddr*)&client, &c);
 
     printf("\n--- SERVER SIDE ---\n");
-    printf("Enter Prime Number (p): ");
-    scanf("%lld", &p);
 
-    printf("Enter Generator (g): ");
-    scanf("%lld", &g);
+    do {
+        printf("Enter Prime Number (p): ");
+        scanf("%lld", &p);
+        if (!isPrime(p))
+            printf("Error: p is not prime. Enter again.\n");
+    } while (!isPrime(p));
+
+    do {
+        printf("Enter Generator (g): ");
+        scanf("%lld", &g);
+        if (!isPrimitiveRoot(g, p))
+            printf("Error: g is not a primitive root of p. Enter again.\n");
+    } while (!isPrimitiveRoot(g, p));
 
     printf("Enter Server Private Key (Xb): ");
     scanf("%lld", &Xb);
 
     Yb = modexp(g, Xb, p);
     printf("Computed Server Public Key (Yb = g^Xb mod p): %lld\n", Yb);
+
+    /* Verify g^(p-1) mod p = 1 */
+    printf("Verification: g^(p-1) mod p = %lld\n", modexp(g, p - 1, p));
 
     /* Send public values */
     send(cfd, (char*)&p, sizeof(p), 0);

@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <winsock2.h>
+#include <math.h>
 
 #pragma comment(lib,"ws2_32.lib")
 
+/* Fast modular exponentiation */
 long long modexp(long long base, long long exp, long long mod) {
     long long res = 1;
     base %= mod;
@@ -13,6 +15,46 @@ long long modexp(long long base, long long exp, long long mod) {
         exp >>= 1;
     }
     return res;
+}
+
+/* Check if p is prime */
+int isPrime(long long n) {
+    if (n <= 1) return 0;
+    if (n <= 3) return 1;
+    if (n % 2 == 0 || n % 3 == 0) return 0;
+    for (long long i = 5; i * i <= n; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0)
+            return 0;
+    }
+    return 1;
+}
+
+/* Get prime factors of n */
+int getPrimeFactors(long long n, long long factors[]) {
+    int count = 0;
+    for (long long i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            factors[count++] = i;
+            while (n % i == 0)
+                n /= i;
+        }
+    }
+    if (n > 1)
+        factors[count++] = n;
+    return count;
+}
+
+/* Check if g is a primitive root of p */
+int isPrimitiveRoot(long long g, long long p) {
+    long long phi = p - 1;
+    long long factors[64];
+    int fcount = getPrimeFactors(phi, factors);
+
+    for (int i = 0; i < fcount; i++) {
+        if (modexp(g, phi / factors[i], p) == 1)
+            return 0;
+    }
+    return 1;
 }
 
 int main() {
@@ -32,7 +74,7 @@ int main() {
     serverSock = socket(AF_INET, SOCK_STREAM, 0);
 
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(9090);   // Server port
+    serverAddr.sin_port = htons(9090);
     serverAddr.sin_addr.s_addr = INADDR_ANY;
 
     bind(serverSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
@@ -43,12 +85,21 @@ int main() {
 
     printf("\n--- SERVER SIDE ---\n");
 
-    /* Input public parameters */
-    printf("Enter prime number (p): ");
-    scanf("%lld", &p);
+    /* Validate prime p */
+    do {
+        printf("Enter prime number (p): ");
+        scanf("%lld", &p);
+        if (!isPrime(p))
+            printf("Error: p is not prime. Enter again.\n");
+    } while (!isPrime(p));
 
-    printf("Enter generator (g): ");
-    scanf("%lld", &g);
+    /* Validate generator g */
+    do {
+        printf("Enter generator (g): ");
+        scanf("%lld", &g);
+        if (!isPrimitiveRoot(g, p))
+            printf("Error: g is not a primitive root of p. Enter again.\n");
+    } while (!isPrimitiveRoot(g, p));
 
     printf("Enter Server Private Key (Xb): ");
     scanf("%lld", &Xb);
@@ -57,7 +108,10 @@ int main() {
     Yb = modexp(g, Xb, p);
     printf("Computed Server Public Key Yb = g^Xb mod p = %lld\n", Yb);
 
-    /* Send public values to client */
+    /* Verify g^(p-1) mod p */
+    printf("Verification: g^(p-1) mod p = %lld\n", modexp(g, p - 1, p));
+
+    /* Send public values */
     send(clientSock, (char*)&p, sizeof(p), 0);
     send(clientSock, (char*)&g, sizeof(g), 0);
     send(clientSock, (char*)&Yb, sizeof(Yb), 0);
