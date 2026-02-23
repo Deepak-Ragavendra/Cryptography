@@ -1,4 +1,3 @@
-// dh_server.c
 #include <stdio.h>
 #include <winsock2.h>
 
@@ -22,9 +21,9 @@ int main() {
     int c = sizeof(client);
 
     long long p, g;
-    long long Xa;   // Server private key
-    long long Ya;   // Server public key
-    long long Yb;   // Client public key
+    long long Xb;   // ✅ Server private key
+    long long Yb;   // ✅ Server public key
+    long long Ya;   // Client public key
     long long key;
 
     WSAStartup(MAKEWORD(2,2), &wsa);
@@ -47,24 +46,24 @@ int main() {
     printf("Enter Generator (g): ");
     scanf("%lld", &g);
 
-    printf("Enter Server Private Key (Xa): ");
-    scanf("%lld", &Xa);
+    printf("Enter Server Private Key (Xb): ");
+    scanf("%lld", &Xb);
 
-    Ya = modexp(g, Xa, p);
-    printf("Computed Server Public Key (Ya = g^Xa mod p): %lld\n", Ya);
+    Yb = modexp(g, Xb, p);
+    printf("Computed Server Public Key (Yb = g^Xb mod p): %lld\n", Yb);
 
-    /* Send only public values */
+    /* Send public values */
     send(cfd, (char*)&p, sizeof(p), 0);
     send(cfd, (char*)&g, sizeof(g), 0);
-    send(cfd, (char*)&Ya, sizeof(Ya), 0);
+    send(cfd, (char*)&Yb, sizeof(Yb), 0);
 
     /* Receive client public key */
-    recv(cfd, (char*)&Yb, sizeof(Yb), 0);
-    printf("Received Client Public Key (Yb): %lld\n", Yb);
+    recv(cfd, (char*)&Ya, sizeof(Ya), 0);
+    printf("Received Client Public Key (Ya): %lld\n", Ya);
 
     /* Compute shared key */
-    key = modexp(Yb, Xa, p);
-    printf("Server Shared Secret Key: %lld\n", key);
+    key = modexp(Ya, Xb, p);
+    printf("Server Shared Secret Key = (Ya^Xb) mod p = %lld\n", key);
 
     closesocket(cfd);
     closesocket(sfd);
