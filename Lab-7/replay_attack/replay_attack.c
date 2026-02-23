@@ -9,7 +9,7 @@ int main() {
     struct sockaddr_in server;
 
     long long p, g, Yb;
-    long long replayYa;   // ✅ Replayed CLIENT public key
+    long long replayYa;   // Replayed CLIENT public key
 
     WSAStartup(MAKEWORD(2,2), &wsa);
     sock = socket(AF_INET, SOCK_STREAM, 0);

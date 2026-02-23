@@ -21,8 +21,8 @@ int main() {
     int c = sizeof(client);
 
     long long p, g;
-    long long Xb;   // ✅ Server private key
-    long long Yb;   // ✅ Server public key
+    long long Xb;   // Server private key
+    long long Yb;   // Server public key
     long long Ya;   // Client public key
     long long key;
 

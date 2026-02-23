@@ -23,8 +23,8 @@ int main() {
     int clientLen = sizeof(clientAddr);
 
     long long p, g;
-    long long Xb;   // ✅ Server private key
-    long long Yb;   // ✅ Server public key
+    long long Xb;   // Server private key
+    long long Yb;   // Server public key
     long long Ya;   // Client / Replay attacker public key
     long long sharedKey;
 

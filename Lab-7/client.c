@@ -20,8 +20,8 @@ int main() {
     struct sockaddr_in server;
 
     long long p, g;
-    long long Xa;   // ✅ Client private key
-    long long Ya;   // ✅ Client public key
+    long long Xa;   // Client private key
+    long long Ya;   // Client public key
     long long Yb;   // Server public key
     long long key;
 
