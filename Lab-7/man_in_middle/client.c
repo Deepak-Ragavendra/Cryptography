@@ -50,6 +50,11 @@ int main() {
     printf("Enter Client Private Key (Xa): ");
     scanf("%lld", &Xa);
 
+    while(Xa>=p){
+        printf("Enter Client Private Key (Xa) < p-1: ");
+        scanf("%lld", &Xa);
+    }
+
     /* Compute client public key */
     Ya = modexp(g, Xa, p);
     printf("Computed Client Public Key Ya = g^Xa mod p = %lld\n", Ya);

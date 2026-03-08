@@ -104,12 +104,15 @@ int main() {
     printf("Enter Server Private Key (Xb): ");
     scanf("%lld", &Xb);
 
+    while(Xb>=p){
+        printf("Enter Client Private Key (Xb) < p-1: ");
+        scanf("%lld", &Xb);
+    }
+
     /* Compute server public key */
     Yb = modexp(g, Xb, p);
     printf("Computed Server Public Key Yb = g^Xb mod p = %lld\n", Yb);
 
-    /* Verify g^(p-1) mod p */
-    printf("Verification: g^(p-1) mod p = %lld\n", modexp(g, p - 1, p));
 
     /* Send public values */
     send(clientSock, (char*)&p, sizeof(p), 0);

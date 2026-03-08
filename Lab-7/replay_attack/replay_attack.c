@@ -31,8 +31,7 @@ int main() {
     printf("Captured Server Public Key (Yb): %lld\n", Yb);
 
     /* Replay previously captured Ya */
-    printf("Enter captured Client Public Key (Ya): ");
-    scanf("%lld", &replayYa);
+    replayYa=8;
 
     send(sock, (char*)&replayYa, sizeof(replayYa), 0);
 
