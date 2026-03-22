@@ -58,9 +58,11 @@ int main()
     }
 
     secret = rand() % (p-1) + 1;
-
-    printf("Enter k (threshold): ");
-    scanf("%d",&k);
+    k=0;
+    while(k<1){
+        printf("Enter k (threshold): ");
+        scanf("%d",&k);
+    }
 
     printf("Enter n (shares): ");
     scanf("%d",&n);
@@ -76,7 +78,7 @@ int main()
 
     for(i=0;i<k;i++)
         printf("a%d = %d\n",i,a[i]);
-
+    
     /* Generate shares */
 
     printf("\nGenerated Shares:\n");
